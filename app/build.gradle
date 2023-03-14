@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.becroft.myapplication'
+    namespace 'com.becroft.androidpong'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.becroft.myapplication"
+        applicationId "com.becroft.androidpong"
         minSdk 21
         targetSdk 33
         versionCode 1

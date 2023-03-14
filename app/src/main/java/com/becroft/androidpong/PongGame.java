@@ -1,6 +1,7 @@
 package com.becroft.androidpong;
 
 import android.content.Context;
+import android.content.Loader;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Canvas;
@@ -57,6 +58,7 @@ public class PongGame extends SurfaceView implements Runnable {
 
     // Sound variables
     private SoundPool SP;
+    private boolean soundLoaded = false;
     private int beepID = -1;
     private int boopID = -1;
     private int bopID = -1;
@@ -83,14 +85,14 @@ public class PongGame extends SurfaceView implements Runnable {
         ball = new Ball(screenX);
         bat = new Bat(screenX, screenY);
         // Init soundpool
-       /* if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AudioAttributes audioAttributes = new AudioAttributes.Builder().
                     setUsage(AudioAttributes.USAGE_MEDIA).
                     setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build();
             SP = new SoundPool.Builder().setMaxStreams(5).setAudioAttributes(audioAttributes).build();
-        } else {*/
+        } else {
             SP = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        //}
+        }
 
         // Open each of the sound files in turn and load them to RAM ready to play
 
@@ -98,17 +100,18 @@ public class PongGame extends SurfaceView implements Runnable {
             Log.d("process", "Storing sound files to RAM");
             AssetManager assetManager = context.getAssets();
             AssetFileDescriptor descriptor;
-            descriptor = assetManager.openFd("app/src/main/Assets/beep.ogg");
+            descriptor = assetManager.openFd("beep.ogg");
             beepID = SP.load(descriptor, 0);
 
-            descriptor = assetManager.openFd("app/src/main/Assets/boop.ogg");
+            descriptor = assetManager.openFd("boop.ogg");
             boopID = SP.load(descriptor, 0);
 
-            descriptor = assetManager.openFd("app/src/main/Assets/bop.ogg");
+            descriptor = assetManager.openFd("bop.ogg");
             bopID = SP.load(descriptor, 0);
 
-            descriptor = assetManager.openFd("app/src/main/Assets/miss.ogg");
+            descriptor = assetManager.openFd("miss.ogg");
             missID = SP.load(descriptor, 0);
+
         } catch(IOException e){
             Log.d("error", "failed to loud sound files");
         }
@@ -284,17 +287,12 @@ public class PongGame extends SurfaceView implements Runnable {
             }
         }
         // Top
-        if(ball.getmRect().top<0){
+        if(ball.getmRect().top < 0){
             ball.reverseYVelocity();
             SP.play(boopID,1,1,0,0,1);
         }
-        // Left
-        if(ball.getmRect().left<0){
-            ball.reverseXVelocity();
-            SP.play(bopID,1,1,0,0,1);
-        }
-        // Right
-        if(ball.getmRect().right > screenX){
+        // Left & Right
+        if(ball.getmRect().left < 0 || ball.getmRect().right > screenX){
             ball.reverseXVelocity();
             SP.play(bopID,1,1,0,0,1);
         }
